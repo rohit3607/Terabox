@@ -9,4 +9,4 @@ python-dotenv
 gunicorn
 gevent
 flask
-pymongo==4.5.0
+pymongo

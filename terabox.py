@@ -48,12 +48,13 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
-        id = message.from_user.id
+    id = message.from_user.id
     if not await present_user(id):
         try:
             await add_user(id)
         except:
             pass
+
     sticker_message = await message.reply_sticker("CAACAgIAAxkBAAEYonplzwrczhVu3I6HqPBzro3L2JU6YAACvAUAAj-VzAoTSKpoG9FPRjQE")
     await asyncio.sleep(2)
     await sticker_message.delete()

@@ -12,6 +12,11 @@ from status import format_progress_bar
 
 from pymongo import MongoClient
 
+load_dotenv('config.env', override=True)
+
+logging.basicConfig(level=logging.INFO)
+
+
 # MongoDB connection setup
 mongo_uri = os.environ.get('MONGO_URI', '')
 if not mongo_uri:

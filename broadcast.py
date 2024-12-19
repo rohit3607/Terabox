@@ -20,6 +20,29 @@ dbclient = MongoClient(mongo_uri)
 database = dbclient['terabox_bot']
 user_data = database['users']
 
+# Fetching data (example query)
+users = user_data.find({})  # Example: Retrieve all users
+
+# Now, interacting with aria2:
+aria2 = aria2p.API(
+    aria2p.Client(
+        host="http://localhost",
+        port=6800,
+        secret=""  # Set the correct secret if required
+    )
+)
+
+# Example: Add a download and update MongoDB with download info
+download = aria2.add_uri(["http://example.com/file.zip"], options={})
+download_id = download.gid
+
+# Update MongoDB with the download status
+user_data.update_one(
+    {"username": "user123"},
+    {"$set": {"downloads": [{"download_id": download_id, "status": "started"}]}}
+)
+
+
 async def present_user(user_id: int):
     found = user_data.find_one({'_id': user_id})
     return bool(found)

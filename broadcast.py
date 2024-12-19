@@ -57,7 +57,7 @@ if len(admin_ids) == 0:
     exit(1)
 
 # Convert admin IDs to a list of integers
-admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if admin_id.strip().isdigit()]
+admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split('7328629001,6955387260') if admin_id.strip().isdigit()]
 
 
 @Client.on_message(filters.private & filters.command('broadcast') & filters.user(admin_user_ids))

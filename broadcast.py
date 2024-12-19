@@ -33,8 +33,12 @@ def get_all_users():
 
 
 
-@Client.on_message(filters.command("broadcast") & filters.user(ADMINS))
+@Client.on_message(filters.command("broadcast"))
 async def broadcast_message(client, message):
+    if message.from_user.id not in ADMINS:
+        await message.reply("You are not authorized to use this command.")
+        return
+    
     if len(message.command) < 2:
         await message.reply("Please provide a message to broadcast.")
         return

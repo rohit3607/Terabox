@@ -18,23 +18,37 @@ logging.basicConfig(level=logging.INFO)
 
 
 # MongoDB connection setup
-mongo_uri = os.environ.get('MONGO_URI', '')
+mongo_uri = os.environ.get('MONGO_URI', 'mongodb+srv://koyeb67user:rohit870@cluster0.fuqhj.mongodb.net/?retryWrites=true&w=majority')
 if not mongo_uri:
     logging.error("MONGO_URI variable is missing! Exiting now")
     exit(1)
 
-client = MongoClient(mongo_uri)
-db = client['terabox_bot']
-user_collection = db['users']
 
-# Function to add a user ID to the database
-def add_user(user_id):
-    if not user_collection.find_one({"user_id": user_id}):
-        user_collection.insert_one({"user_id": user_id})
+dbclient = pymongo.MongoClient(mongo_uri)
+database = dbclient[terabox_bot]
+user_data = database['users']
 
-# Function to get all user IDs from the database
-def get_all_users():
-    return [doc["user_id"] for doc in user_collection.find()]
+
+
+async def present_user(user_id : int):
+    found = user_data.find_one({'_id': user_id})
+    return bool(found)
+
+async def add_user(user_id: int):
+    user_data.insert_one({'_id': user_id})
+    return
+
+async def full_userbase():
+    user_docs = user_data.find()
+    user_ids = []
+    for doc in user_docs:
+        user_ids.append(doc['_id'])
+
+    return user_ids
+
+async def del_user(user_id: int):
+    user_data.delete_one({'_id': user_id})
+    return
 
 # Fetch admin IDs from environment variables
 admin_ids = os.environ.get('ADMINS', '')

@@ -31,31 +31,20 @@ def add_user(user_id):
 def get_all_users():
     return [doc["user_id"] for doc in user_collection.find()]
 
+# Fetch admin IDs from environment variables
+admin_ids = os.environ.get('ADMINS', '')
+if len(admin_ids) == 0:
+    logging.error("ADMINS variable is missing! Exiting now")
+    exit(1)
+
+# Convert admin IDs to a list of integers
+admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if admin_id.strip().isdigit()]
 
 
-@Client.on_message(filters.command("broadcast"))
-async def broadcast_message(client, message):
-    if message.from_user.id not in ADMINS:
-        await message.reply("You are not authorized to use this command.")
-        return
-    
-    if len(message.command) < 2:
-        await message.reply("Please provide a message to broadcast.")
-        return
-
-    broadcast_message = message.text.split(' ', 1)[1]
-    user_ids = get_all_users()
-
-    for user_id in user_ids:
-        try:
-            await client.send_message(chat_id=user_id, text=broadcast_message)
-        except Exception as e:
-            logging.error(f"Failed to send message to {user_id}: {e}")
-
-@Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
+@Client.on_message(filters.private & filters.command('broadcast') & filters.user(admin_user_ids))
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
-        query = await full_userbase()
+        query = get_all_users()  # Fetch all user IDs from the database
         broadcast_msg = message.reply_to_message
         total = 0
         successful = 0
@@ -63,37 +52,37 @@ async def send_text(client: Bot, message: Message):
         deleted = 0
         unsuccessful = 0
 
-        pls_wait = await message.reply("<i>Broadcasting Message.. This will Take Some Time</i>")
+        pls_wait = await message.reply("<i>Broadcasting Message.. This will take some time</i>")
         for chat_id in query:
             try:
                 await broadcast_msg.copy(chat_id)
                 successful += 1
             except FloodWait as e:
-                await asyncio.sleep(e.x)
+                await asyncio.sleep(e.value)
                 await broadcast_msg.copy(chat_id)
                 successful += 1
             except UserIsBlocked:
-                await del_user(chat_id)
+                await del_user(chat_id)  # Remove blocked user from the database
                 blocked += 1
             except InputUserDeactivated:
-                await del_user(chat_id)
+                await del_user(chat_id)  # Remove deactivated user from the database
                 deleted += 1
-            except:
+            except Exception as e:
+                logging.error(f"Failed to broadcast to {chat_id}: {e}")
                 unsuccessful += 1
-                pass
             total += 1
 
-        status = f"""<b><u>Broadcast Completed</u>
+        status = f"""<b><u>Broadcast Completed</u></b>
 
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
+<b>Total Users:</b> <code>{total}</code>
+<b>Successful:</b> <code>{successful}</code>
+<b>Blocked Users:</b> <code>{blocked}</code>
+<b>Deleted Accounts:</b> <code>{deleted}</code>
+<b>Unsuccessful:</b> <code>{unsuccessful}</code>"""
 
         return await pls_wait.edit(status)
 
     else:
-        msg = await message.reply(REPLY_ERROR)
+        msg = await message.reply("<i>Please reply to a message to broadcast it.</i>")
         await asyncio.sleep(8)
         await msg.delete()

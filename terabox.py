@@ -208,55 +208,55 @@ admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if 
 @app.on_message(filters.command('broadcast'))
 async def handle_broadcast(client: Client, message: Message):
     if message.from_user.id in admin_user_ids:
-        # Handle the broadcast logic
-    if message.reply_to_message:
-        query = await full_userbase()
-        broadcast_msg = message.reply_to_message
-        total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
+        if message.reply_to_message:
+            query = await full_userbase()
+            broadcast_msg = message.reply_to_message
+            total, successful, blocked, deleted, unsuccessful = 0, 0, 0, 0, 0
 
-        pls_wait = await message.reply("<i>Broadcasting Message... This will take some time</i>")
-        for chat_id in query:
-            try:
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                await broadcast_msg.copy(chat_id)
-                successful += 1
-            except UserIsBlocked:
-                await del_user(chat_id)
-                blocked += 1
-            except InputUserDeactivated:
-                await del_user(chat_id)
-                deleted += 1
-            except Exception as e:
-                logging.error(f"Failed to broadcast to {chat_id}: {e}")
-                unsuccessful += 1
-            total += 1
+            pls_wait = await message.reply("<i>Broadcasting Message... This will take some time</i>")
+            for chat_id in query:
+                try:
+                    await broadcast_msg.copy(chat_id)
+                    successful += 1
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await broadcast_msg.copy(chat_id)
+                    successful += 1
+                except UserIsBlocked:
+                    await del_user(chat_id)
+                    blocked += 1
+                except InputUserDeactivated:
+                    await del_user(chat_id)
+                    deleted += 1
+                except Exception as e:
+                    logging.error(f"Failed to broadcast to {chat_id}: {e}")
+                    unsuccessful += 1
+                total += 1
 
-        status = f"""<b><u>Broadcast Completed</u></b>
+            status = f"""<b><u>Broadcast Completed</u></b>
 
 <b>Total Users:</b> <code>{total}</code>
 <b>Successful:</b> <code>{successful}</code>
 <b>Blocked Users:</b> <code>{blocked}</code>
 <b>Deleted Accounts:</b> <code>{deleted}</code>
 <b>Unsuccessful:</b> <code>{unsuccessful}</code>"""
-        await pls_wait.edit(status)
-    else:
-        msg = await message.reply("<i>Please reply to a message to broadcast it.</i>")
-        await asyncio.sleep(8)
-        await msg.delete()
+            await pls_wait.edit(status)
+        else:
+            msg = await message.reply("<i>Please reply to a message to broadcast it.</i>")
+            await asyncio.sleep(8)
+            await msg.delete()
 
-@app.on_message(filters.command('users') & filters.user(admin_user_ids))
+@app.on_message(filters.command('users'))
 async def get_users(client: Client, message: Message):
-    # Corrected the text string with quotes
-    msg = await client.send_message(chat_id=message.chat.id, text="Ruk jaa")  
-    try:
-        users = await full_userbase()
-        await msg.edit(f"{len(users)} users are using this bot")
-    except Exception as e:
-        logging.error(f"Error in /users command: {e}")
-        await msg.edit("An error occurred while fetching user data.")
+    if message.from_user.id in admin_user_ids:
+        # Corrected the text string with quotes
+        msg = await client.send_message(chat_id=message.chat.id, text="Ruk jaa")  
+        try:
+            users = await full_userbase()
+            await msg.edit(f"{len(users)} users are using this bot")
+        except Exception as e:
+            logging.error(f"Error in /users command: {e}")
+            await msg.edit("An error occurred while fetching user data.")
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ import aria2p
 load_dotenv('config.env', override=True)
 logging.basicConfig(level=logging.INFO)
 
+app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 # MongoDB connection setup
 mongo_uri = os.environ.get('MONGO_URI', 'mongodb+srv://Mrdaxx123:Mrdaxx123@cluster0.q1da65h.mongodb.net/?retryWrites=true&w=majority')

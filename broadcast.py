@@ -67,7 +67,7 @@ admin_ids = os.environ.get('ADMINS', '')
 if len(admin_ids) == 0:
     logging.error("ADMINS variable is missing! Exiting now")
     exit(1)
-admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if admin_id.strip().isdigit()]
+admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split('7328629001,6955387260') if admin_id.strip().isdigit()]
 
 @Client.on_message(filters.private & filters.command('broadcast') & filters.user(admin_user_ids))
 async def send_text(client: Client, message: Message):
@@ -108,3 +108,9 @@ async def send_text(client: Client, message: Message):
         msg = await message.reply("<i>Please reply to a message to broadcast it.</i>")
         await asyncio.sleep(8)
         await msg.delete()
+
+@Client.on_message(filters.command('users') & filters.private & filters.user(admin_user_ids))
+async def get_users(client: Client, message: Message):
+    msg = await client.send_message(chat_id=message.chat.id, text=Ruk jaa)
+    users = await full_userbase()
+    await msg.edit(f"{len(users)} users are using this bot")

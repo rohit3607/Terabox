@@ -111,6 +111,11 @@ async def send_text(client: Client, message: Message):
 
 @Client.on_message(filters.command('users') & filters.private & filters.user(admin_user_ids))
 async def get_users(client: Client, message: Message):
-    msg = await client.send_message(chat_id=message.chat.id, text=Ruk jaa)
-    users = await full_userbase()
-    await msg.edit(f"{len(users)} users are using this bot")
+    # Corrected the text string with quotes
+    msg = await client.send_message(chat_id=message.chat.id, text="Ruk jaa")  
+    try:
+        users = await full_userbase()
+        await msg.edit(f"{len(users)} users are using this bot")
+    except Exception as e:
+        logging.error(f"Error in /users command: {e}")
+        await msg.edit("An error occurred while fetching user data.")

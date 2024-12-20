@@ -69,7 +69,7 @@ if len(admin_ids) == 0:
     exit(1)
 admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split('7328629001,6955387260') if admin_id.strip().isdigit()]
 
-@Client.on_message(filters.private & filters.command('broadcast') & filters.user(admin_user_ids))
+@app.on_message(filters.private & filters.text('/broadcast') & filters.user(admin_user_ids))
 async def send_text(client: Client, message: Message):
     if message.reply_to_message:
         query = await full_userbase()
@@ -109,7 +109,7 @@ async def send_text(client: Client, message: Message):
         await asyncio.sleep(8)
         await msg.delete()
 
-@Client.on_message(filters.command('users') & filters.private & filters.user(admin_user_ids))
+@app.on_message(filters.text('/users') & filters.private & filters.user(admin_user_ids))
 async def get_users(client: Client, message: Message):
     # Corrected the text string with quotes
     msg = await client.send_message(chat_id=message.chat.id, text="Ruk jaa")  

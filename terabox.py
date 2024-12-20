@@ -93,7 +93,7 @@ async def handle_message(client, message: Message):
         return
 
     # Check if the message is the broadcast command
-    if message.text.startswith("/broadcast") and message.from_user.id in [OWNER_ID]:  # Replace OWNER_ID with your ID
+    if message.text.startswith("/broadcast") and message.from_user.id in [admin_user_ids]:  # Replace OWNER_ID with your ID
         # Handle the broadcast command here
         try:
             await handle_broadcast(client, message)

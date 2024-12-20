@@ -200,10 +200,11 @@ async def del_user(user_id: int):
     user_data.delete_one({'_id': user_id})
 
 # Fetch admin IDs from environment variables
-admin_ids = os.environ.get('ADMINS', '7328629001,6955387260')
+admin_ids = os.environ.get('ADMINS', '')
 if len(admin_ids) == 0:
     logging.error("ADMINS variable is missing! Exiting now")
     exit(1)
+
 admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if admin_id.strip().isdigit()]
 
 @app.on_message(filters.command('broadcast'))

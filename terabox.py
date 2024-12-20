@@ -92,8 +92,11 @@ async def handle_message(client, message: Message):
         logging.error("Message does not contain user information.")
         return
 
-    # Check if the message is the broadcast command
-    if message.text.startswith("/broadcast") and message.from_user.id in admin_user_ids:  # Replace admin_user_ids with your list of admin IDs
+    user_id = message.from_user.id
+    user_mention = message.from_user.mention
+
+    # Check if the message is the /broadcast command
+    if message.text.startswith("/broadcast") and user_id in admin_user_ids:  # Replace admin_user_ids with your admin IDs
         try:
             await handle_broadcast(client, message)
         except Exception as e:
@@ -102,7 +105,7 @@ async def handle_message(client, message: Message):
         return
 
     # Check if the message is the /users command
-    if message.text.startswith("/users") and message.from_user.id in admin_user_ids:  # Replace admin_user_ids with your list of admin IDs
+    if message.text.startswith("/users") and user_id in admin_user_ids:  # Replace admin_user_ids with your admin IDs
         try:
             users = await full_userbase()
             await message.reply_text(f"Currently, {len(users)} users are using this bot.")
@@ -111,30 +114,29 @@ async def handle_message(client, message: Message):
             await message.reply_text("An error occurred while fetching the user data.")
         return
 
-    user_id = message.from_user.id
-    user_mention = message.from_user.mention
+    # Check if the user is a member of the required channel
     is_member = await is_user_member(client, user_id)
-
     if not is_member:
         join_button = InlineKeyboardButton("ᴊᴏɪɴ ❤️🚀", url="https://t.me/Javpostr")
         reply_markup = InlineKeyboardMarkup([[join_button]])
         await message.reply_text("ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ.", reply_markup=reply_markup)
         return
 
+    # Validate the Terabox link
     valid_domains = [
         'terabox.com', 'nephobox.com', '4funbox.com', 'mirrobox.com', 
         'momerybox.com', 'teraboxapp.com', '1024tera.com', 
         'terabox.app', 'gibibox.com', 'goaibox.com', 'terasharelink.com', 'teraboxlink.com', 'terafileshare.com'
     ]
-
     terabox_link = message.text.strip()
 
-    if not any(domain in terabox_link for domain in valid_domains):
+    # Ignore commands and validate only non-command messages
+    if not any(domain in terabox_link for domain in valid_domains) and not message.text.startswith("/"):
         await message.reply_text("ᴘʟᴇᴀsᴇ sᴇɴᴅ ᴀ ᴠᴀʟɪᴅ ᴛᴇʀᴀʙᴏx ʟɪɴᴋ.")
         return
 
+    # Process the Terabox link
     reply_msg = await message.reply_text("sᴇɴᴅɪɴɢ ʏᴏᴜ ᴛʜᴇ ᴍᴇᴅɪᴀ...🤤")
-
     try:
         file_path, thumbnail_path, video_title = await download_video(terabox_link, reply_msg, user_mention, user_id)
         await upload_video(client, file_path, thumbnail_path, video_title, reply_msg, dump_id, user_mention, user_id, message)

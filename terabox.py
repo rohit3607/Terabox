@@ -209,6 +209,7 @@ admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if 
 
 @app.on_message(filters.command('broadcast'))
 async def handle_broadcast(client: Client, message: Message):
+    # Check if the user is in the admin list
     if message.from_user.id in admin_user_ids:
         if message.reply_to_message:
             query = await full_userbase()
@@ -247,6 +248,9 @@ async def handle_broadcast(client: Client, message: Message):
             msg = await message.reply("<i>Please reply to a message to broadcast it.</i>")
             await asyncio.sleep(8)
             await msg.delete()
+    else:
+        # Respond with a message if the user is not an admin
+        await message.reply("<i>You are not verified to use this command.</i>")
 
 @app.on_message(filters.command('users'))
 async def get_users(client: Client, message: Message):

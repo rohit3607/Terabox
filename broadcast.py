@@ -11,7 +11,7 @@ load_dotenv('config.env', override=True)
 logging.basicConfig(level=logging.INFO)
 
 # MongoDB connection setup
-mongo_uri = os.environ.get('MONGO_URI', '')
+mongo_uri = os.environ.get('MONGO_URI', 'mongodb+srv://Mrdaxx123:Mrdaxx123@cluster0.q1da65h.mongodb.net/?retryWrites=true&w=majority')
 if not mongo_uri:
     logging.error("MONGO_URI variable is missing! Exiting now")
     exit(1)

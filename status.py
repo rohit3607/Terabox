@@ -30,5 +30,6 @@ def format_progress_bar(filename, percentage, done, total_size, status, eta, spe
         f"┠ ᴘʀᴏᴄᴇssᴇᴅ: {format_size(done)} ᴏғ {format_size(total_size)}\n"
         f"┠ sᴛᴀᴛᴜs: {status}\n"
         f"┠ sᴘᴇᴇᴅ: {format_size(speed)}/s\n"
+        f"┠ Developed by: @rohit_1888\n"
         f"┖ ᴜsᴇʀ: {user_mention} | ɪᴅ: {user_id}" 
     )

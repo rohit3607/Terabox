@@ -205,7 +205,7 @@ if len(admin_ids) == 0:
     exit(1)
 admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split('7328629001,6955387260') if admin_id.strip().isdigit()]
 
-@app.on_message(filters.private & filters.text('/broadcast') & filters.user(admin_user_ids))
+@app.on_message(filters.text('/broadcast') & filters.user(admin_user_ids))
 async def handle_broadcast(client: Client, message: Message):
     if message.reply_to_message:
         query = await full_userbase()

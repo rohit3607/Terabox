@@ -52,7 +52,7 @@ if not mongo_uri:
     logging.error("MONGO_URI variable is missing! Exiting now")
     exit(1)
 
-app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token, mongo_uri=mongo_uri)
+app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 @app.on_message(filters.command("start"))
 async def start_command(client, message):

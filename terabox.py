@@ -92,6 +92,16 @@ async def handle_message(client, message: Message):
         logging.error("Message does not contain user information.")
         return
 
+    # Check if the message is the broadcast command
+    if message.text.startswith("/broadcast") and message.from_user.id in [OWNER_ID]:  # Replace OWNER_ID with your ID
+        # Handle the broadcast command here
+        try:
+            await handle_broadcast(client, message)
+        except Exception as e:
+            logging.error(f"Error in broadcast command: {e}")
+            await message.reply_text("Failed to broadcast the message.")
+        return
+
     user_id = message.from_user.id
     user_mention = message.from_user.mention
     is_member = await is_user_member(client, user_id)
@@ -103,9 +113,9 @@ async def handle_message(client, message: Message):
         return
 
     valid_domains = [
-    'terabox.com', 'nephobox.com', '4funbox.com', 'mirrobox.com', 
-    'momerybox.com', 'teraboxapp.com', '1024tera.com', 
-    'terabox.app', 'gibibox.com', 'goaibox.com', 'terasharelink.com', 'teraboxlink.com', 'terafileshare.com'
+        'terabox.com', 'nephobox.com', '4funbox.com', 'mirrobox.com', 
+        'momerybox.com', 'teraboxapp.com', '1024tera.com', 
+        'terabox.app', 'gibibox.com', 'goaibox.com', 'terasharelink.com', 'teraboxlink.com', 'terafileshare.com'
     ]
 
     terabox_link = message.text.strip()
@@ -122,6 +132,7 @@ async def handle_message(client, message: Message):
     except Exception as e:
         logging.error(f"Error handling message: {e}")
         await reply_msg.edit_text("Api has given a Broken Download Link. Dont Contact the Owner for this Issue.")
+
 
 if __name__ == "__main__":
     keep_alive()

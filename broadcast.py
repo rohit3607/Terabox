@@ -6,6 +6,8 @@ from pyrogram.enums import ChatMemberStatus
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import requests
+import aria2p
 
 load_dotenv('config.env', override=True)
 logging.basicConfig(level=logging.INFO)

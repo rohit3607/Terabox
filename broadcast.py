@@ -12,6 +12,7 @@ import aria2p
 load_dotenv('config.env', override=True)
 logging.basicConfig(level=logging.INFO)
 
+
 # MongoDB connection setup
 mongo_uri = os.environ.get('MONGO_URI', 'mongodb+srv://Mrdaxx123:Mrdaxx123@cluster0.q1da65h.mongodb.net/?retryWrites=true&w=majority')
 if not mongo_uri:
@@ -35,15 +36,17 @@ aria2 = aria2p.API(
 )
 
 # Example: Add a download and update MongoDB with download info
-download = aria2.add_uri(["http://example.com/file.zip"], options={})
-download_id = download.gid
+try:
+    download = aria2.add(["http://example.com/file.zip"])  # Use 'add' instead of 'add_uri'
+    download_id = download.gid
 
-# Update MongoDB with the download status
-user_data.update_one(
-    {"username": "user123"},
-    {"$set": {"downloads": [{"download_id": download_id, "status": "started"}]}}
-)
-
+    # Update MongoDB with the download status
+    user_data.update_one(
+        {"username": "user123"},
+        {"$set": {"downloads": [{"download_id": download_id, "status": "started"}]}}
+    )
+except Exception as e:
+    logging.error(f"Failed to add download: {e}")
 
 async def present_user(user_id: int):
     found = user_data.find_one({'_id': user_id})

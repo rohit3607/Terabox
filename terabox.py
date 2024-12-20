@@ -93,13 +93,22 @@ async def handle_message(client, message: Message):
         return
 
     # Check if the message is the broadcast command
-    if message.text.startswith("/broadcast") and message.from_user.id in [admin_user_ids]:  # Replace OWNER_ID with your ID
-        # Handle the broadcast command here
+    if message.text.startswith("/broadcast") and message.from_user.id in admin_user_ids:  # Replace admin_user_ids with your list of admin IDs
         try:
             await handle_broadcast(client, message)
         except Exception as e:
             logging.error(f"Error in broadcast command: {e}")
             await message.reply_text("Failed to broadcast the message.")
+        return
+
+    # Check if the message is the /users command
+    if message.text.startswith("/users") and message.from_user.id in admin_user_ids:  # Replace admin_user_ids with your list of admin IDs
+        try:
+            users = await full_userbase()
+            await message.reply_text(f"Currently, {len(users)} users are using this bot.")
+        except Exception as e:
+            logging.error(f"Error in /users command: {e}")
+            await message.reply_text("An error occurred while fetching the user data.")
         return
 
     user_id = message.from_user.id

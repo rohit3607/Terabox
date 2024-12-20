@@ -12,35 +12,7 @@ import aria2p
 load_dotenv('config.env', override=True)
 logging.basicConfig(level=logging.INFO)
 
-app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
-
-api_id = os.environ.get('TELEGRAM_API', '')
-if len(api_id) == 0:
-    logging.error("TELEGRAM_API variable is missing! Exiting now")
-    exit(1)
-
-api_hash = os.environ.get('TELEGRAM_HASH', '')
-if len(api_hash) == 0:
-    logging.error("TELEGRAM_HASH variable is missing! Exiting now")
-    exit(1)
-
-bot_token = os.environ.get('BOT_TOKEN', '')
-if len(bot_token) == 0:
-    logging.error("BOT_TOKEN variable is missing! Exiting now")
-    exit(1)
-dump_id = os.environ.get('DUMP_CHAT_ID', '')
-if len(dump_id) == 0:
-    logging.error("DUMP_CHAT_ID variable is missing! Exiting now")
-    exit(1)
-else:
-    dump_id = int(dump_id)
-
-fsub_id = os.environ.get('FSUB_ID', '')
-if len(fsub_id) == 0:
-    logging.error("FSUB_ID variable is missing! Exiting now")
-    exit(1)
-else:
-    fsub_id = int(fsub_id)
+app = Client
 
 
 # MongoDB connection setup

@@ -13,7 +13,7 @@ from video import download_video, upload_video
 from web import keep_alive
 import requests
 import aria2p
-from broadcast import *
+
 load_dotenv('config.env', override=True)
 
 logging.basicConfig(level=logging.INFO)
@@ -203,10 +203,12 @@ admin_ids = os.environ.get('ADMINS', '7328629001,6955387260')
 if len(admin_ids) == 0:
     logging.error("ADMINS variable is missing! Exiting now")
     exit(1)
-admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split('7328629001,6955387260') if admin_id.strip().isdigit()]
+admin_user_ids = [int(admin_id.strip()) for admin_id in admin_ids.split(',') if admin_id.strip().isdigit()]
 
-@app.on_message(filters.command('broadcast') & filters.user(admin_user_ids))
+@app.on_message(filters.command('broadcast'))
 async def handle_broadcast(client: Client, message: Message):
+    if message.from_user.id in admin_user_ids:
+        # Handle the broadcast logic
     if message.reply_to_message:
         query = await full_userbase()
         broadcast_msg = message.reply_to_message

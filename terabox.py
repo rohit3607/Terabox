@@ -96,7 +96,7 @@ async def handle_message(client, message: Message):
     user_mention = message.from_user.mention
 
     # Check if the message is the /broadcast command
-    if message.text.startswith("/broadcast") and user_id in admin_user_ids:  # Replace admin_user_ids with your admin IDs
+    if message.text.startswith("/broadcast") and user_id in admin_user_ids:
         try:
             await handle_broadcast(client, message)
         except Exception as e:
@@ -105,7 +105,7 @@ async def handle_message(client, message: Message):
         return
 
     # Check if the message is the /users command
-    if message.text.startswith("/users") and user_id in admin_user_ids:  # Replace admin_user_ids with your admin IDs
+    if message.text.startswith("/users") and user_id in admin_user_ids:
         try:
             users = await full_userbase()
             await message.reply_text(f"Currently, {len(users)} users are using this bot.")
@@ -122,7 +122,7 @@ async def handle_message(client, message: Message):
         await message.reply_text("ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ.", reply_markup=reply_markup)
         return
 
-    # Validate the Terabox link
+    # Validate the Terabox link (this will now be checked only if the message is not a command)
     valid_domains = [
         'terabox.com', 'nephobox.com', '4funbox.com', 'mirrobox.com', 
         'momerybox.com', 'teraboxapp.com', '1024tera.com', 
@@ -130,20 +130,20 @@ async def handle_message(client, message: Message):
     ]
     terabox_link = message.text.strip()
 
-    # Ignore commands and validate only non-command messages
+    # Check if the message is a valid Terabox link (ignore if it's a command)
     if not any(domain in terabox_link for domain in valid_domains) and not message.text.startswith("/"):
         await message.reply_text("ᴘʟᴇᴀsᴇ sᴇɴᴅ ᴀ ᴠᴀʟɪᴅ ᴛᴇʀᴀʙᴏx ʟɪɴᴋ.")
         return
 
-    # Process the Terabox link
-    reply_msg = await message.reply_text("sᴇɴᴅɪɴɢ ʏᴏᴜ ᴛʜᴇ ᴍᴇᴅɪᴀ...🤤")
-    try:
-        file_path, thumbnail_path, video_title = await download_video(terabox_link, reply_msg, user_mention, user_id)
-        await upload_video(client, file_path, thumbnail_path, video_title, reply_msg, dump_id, user_mention, user_id, message)
-    except Exception as e:
-        logging.error(f"Error handling message: {e}")
-        await reply_msg.edit_text("Api has given a Broken Download Link. Dont Contact the Owner for this Issue.")
-
+    # If the link is valid, proceed to process the link
+    if not message.text.startswith("/"):  # Ensure we're not processing a command
+        reply_msg = await message.reply_text("sᴇɴᴅɪɴɢ ʏᴏᴜ ᴛʜᴇ ᴍᴇᴅɪᴀ...🤤")
+        try:
+            file_path, thumbnail_path, video_title = await download_video(terabox_link, reply_msg, user_mention, user_id)
+            await upload_video(client, file_path, thumbnail_path, video_title, reply_msg, dump_id, user_mention, user_id, message)
+        except Exception as e:
+            logging.error(f"Error handling message: {e}")
+            await reply_msg.edit_text("Api has given a Broken Download Link. Dont Contact the Owner for this Issue.")
 
 if __name__ == "__main__":
     keep_alive()
